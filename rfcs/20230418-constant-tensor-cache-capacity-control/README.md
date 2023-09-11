@@ -80,21 +80,18 @@ void set_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind, size_t capa
 size_t get_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind);
 ```
 
-The unit of capacity is `MBytes`. Users can call the setter API to set the
-capacity for specific engine kind. If the cached tensors' size reaches the
-capacity, the new coming tensors won't be cached while the cached tensor won't
-be evicted by default. The getter API can be used to query the current capacity
-of specific engine kind. Please note that the specified capacity is just a hint,
-and the library does not guarantee that the cached tensors size will always
-reach the capacity.
+To limit the capacity for a specific engine kind users must call the setter API.
+The unit of set capacity API is megabytes (MB). When cached tensors total size
+reaches the capacity, new tensors won't be cached. To query current capacity for
+a specific engine kind user must call the getter API.
 
 The default capacity is kept to be infinite on both CPU and GPU to keep the
 library default behavior backward compatible.
 
-We also allow to control the capacity by using an environment variable named
-`ONEDNN_GRAPH_CONSTANT_TENSOR_CACHE_CAPACITY`. The form of this env var value is
-`engine_kind:size`. We can use `;` to split the configuration for different
-engine kind. Below is an example:
+In addition to programmable API there is an environment variable named
+`ONEDNN_GRAPH_CONSTANT_TENSOR_CACHE_CAPACITY` to control the capacity. It
+accepts values in form `engine_kind:size`. or
+`engine_kind1:size1;engine_kind2:size2`. Example:
 
 ```shell
 # set cpu/gpu constant tensor cache capacity to 10 GB and 2 GB separately
@@ -102,10 +99,11 @@ export ONEDNN_GRAPH_CONSTANT_TENSOR_CACHE_CAPACITY=cpu:10240;gpu:2048
 ```
 
 These two functional APIs could be called multiple times at runtime. When the
-capacity is set to any number, the corresponding constant tensor cache will be
-completely flushed. So users should note that re-setting capacity frequently may
-hurt the performance. Setting capacity to 0 means to clear all cached tensors
-and disable constant tensor cache feature.
+capacity is set to any number for the first time, or decreasing the amount, the
+corresponding constant tensor cache will be completely flushed. Increasing
+amount doesn't flush the cache. So users should note that re-setting capacity
+frequently may hurt the performance. Setting capacity to 0 means to clear all
+cached tensors and disable constant tensor cache feature.
 
 When the capacity is explicitly set to a limited number, then once the limit is
 reached, no new tensors will be cached.
