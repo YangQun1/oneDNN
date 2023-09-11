@@ -76,8 +76,8 @@ Based on above considerations, we proposed to add the following two C++ API and
 corresponding C API to control the capacity of constant tensor cache:
 
 ```cpp
-void set_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind, size_t capacity);
-size_t get_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind);
+void set_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind, int64_t capacity);
+int64_t get_constant_tensor_cache_capacity(dnnl::engine::kind eng_kind);
 ```
 
 To limit the capacity for a specific engine kind users must call the setter API.
